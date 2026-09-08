@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Challenge TOTVS 2026 Frontend
 
-## Getting Started
+Interface web da plataforma de Inteligência Conversacional. O frontend recebe transcrições, acompanha o processamento assíncrono e apresenta insights, downloads e compartilhamento de relatórios.
 
-First, run the development server:
+## Requisitos
+
+- Node.js 20 ou superior
+- API principal em execução (por padrão, `http://localhost:8080`)
+
+## Executar localmente
 
 ```bash
+npm ci
+Copy-Item .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra `http://localhost:3000` no navegador.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Variáveis de ambiente
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variável | Padrão | Finalidade |
+| --- | --- | --- |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8080` | Base da API REST |
+| `NEXT_PUBLIC_WS_URL` | `ws://localhost:8080/ws` | Base do WebSocket de status |
 
-## Learn More
+## Comandos
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run dev    # servidor de desenvolvimento
+npm run lint   # análise estática
+npm run build  # build de produção
+npm run start  # executa o build de produção
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Integração esperada
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+A API deve aceitar requisições do frontend em `http://localhost:3000` com credenciais e expor login, cadastro, upload, relatórios, compartilhamento e WebSocket. O download é solicitado em `GET /reports/:id/download?type=pdf|xlsx`; a resposta deve fornecer uma URL SAS temporária em `url`, `downloadUrl` ou `sasUrl`.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Os arquivos aceitos pela interface são CSV, JSON, JSONL e XLSX. A validação estrutural da base e o contrato definitivo de `insights.json` dependem da API e do worker.

@@ -5,10 +5,13 @@ import Link from "next/link";
 import { apiClient, ApiError } from "@/lib/apiClient";
 
 const STAGE_LABEL = {
+  pending: "Recebido",
   received: "Recebido",
   queued: "Na fila",
   processing: "Processando",
+  completed: "Pronto",
   done: "Pronto",
+  failed: "Falhou",
   error: "Falhou",
 };
 
@@ -67,7 +70,11 @@ export default function DashboardPage() {
                 <span
                   className={[
                     "font-mono text-xs uppercase tracking-wider",
-                    report.stage === "error" ? "text-rust" : report.stage === "done" ? "text-cyan-deep" : "text-cyan",
+                    ["error", "failed"].includes(report.stage)
+                      ? "text-rust"
+                      : ["done", "completed"].includes(report.stage)
+                        ? "text-cyan-deep"
+                        : "text-cyan",
                   ].join(" ")}
                 >
                   {STAGE_LABEL[report.stage] ?? report.stage}

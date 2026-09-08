@@ -5,7 +5,7 @@ import { subscribeToJobStatus } from "@/lib/websocket";
 import PipelineStepper from "./PipelineStepper";
 
 export default function StatusTracker({ jobId, onComplete }) {
-  const [status, setStatus] = useState({ stage: "received", updatedAt: null });
+  const [status, setStatus] = useState({ stage: "pending", updatedAt: null });
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function StatusTracker({ jobId, onComplete }) {
       onStatus: (payload) => {
         setStatus(payload);
         setError(payload.stage === "error" ? payload.message ?? "Falha no processamento" : null);
-        if (payload.stage === "done") onComplete?.(payload);
+        if (payload.stage === "completed" || payload.stage === "done") onComplete?.(payload);
       },
       onError: (err) => setError(err.message),
     });
@@ -33,7 +33,9 @@ export default function StatusTracker({ jobId, onComplete }) {
       </div>
 
       {error && (
-        <p className="mt-4 border-l-2 border-rust pl-3 text-sm text-rust">{error}</p>
+        <p className="mt-4 border-l-2 border-rust pl-3 text-sm text-rust" role="alert">
+          {error}
+        </p>
       )}
     </div>
   );

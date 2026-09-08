@@ -3,6 +3,8 @@
 import { useCallback, useRef, useState } from "react";
 import { apiClient, ApiError } from "@/lib/apiClient";
 
+const ACCEPTED_EXTENSIONS = new Set(["csv", "json", "jsonl", "xlsx"]);
+
 export default function UploadForm({ onJobCreated }) {
   const inputRef = useRef(null);
   const [file, setFile] = useState(null);
@@ -12,7 +14,17 @@ export default function UploadForm({ onJobCreated }) {
 
   const handleFiles = useCallback((fileList) => {
     const [selected] = fileList;
-    if (selected) setFile(selected);
+    if (!selected) return;
+
+    const extension = selected.name.split(".").pop()?.toLowerCase();
+    if (!extension || !ACCEPTED_EXTENSIONS.has(extension)) {
+      setFile(null);
+      setError("Envie um arquivo CSV, JSON, JSONL ou XLSX.");
+      return;
+    }
+
+    setError(null);
+    setFile(selected);
   }, []);
 
   async function handleSubmit(event) {
@@ -41,7 +53,12 @@ export default function UploadForm({ onJobCreated }) {
         role="button"
         tabIndex={0}
         onClick={() => inputRef.current?.click()}
-        onKeyDown={(event) => event.key === "Enter" && inputRef.current?.click()}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
         onDragOver={(event) => {
           event.preventDefault();
           setIsDragging(true);
@@ -60,6 +77,7 @@ export default function UploadForm({ onJobCreated }) {
         <input
           ref={inputRef}
           type="file"
+          accept=".csv,.json,.jsonl,.xlsx,application/json,text/csv,application/x-ndjson,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           className="sr-only"
           onChange={(event) => handleFiles(event.target.files)}
         />
@@ -70,7 +88,7 @@ export default function UploadForm({ onJobCreated }) {
             <p className="font-display text-lg font-medium text-foreground">
               Solte um arquivo aqui ou clique para escolher
             </p>
-            <p className="font-mono text-xs text-foreground-dim">CSV, XLSX ou JSON</p>
+            <p className="font-mono text-xs text-foreground-dim">CSV, JSON, JSONL ou XLSX</p>
           </>
         )}
       </div>

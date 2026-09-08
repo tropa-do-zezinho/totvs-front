@@ -12,6 +12,8 @@ export default function ReportPage({ params }) {
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [downloadingType, setDownloadingType] = useState(null);
+  const [downloadError, setDownloadError] = useState(null);
 
   useEffect(() => {
     apiClient
@@ -37,6 +39,23 @@ export default function ReportPage({ params }) {
   }
 
   const insights = report.insights ?? { stats: [], charts: [] };
+  const isComplete = ["completed", "done"].includes(report.stage);
+
+  async function handleDownload(type) {
+    setDownloadingType(type);
+    setDownloadError(null);
+
+    try {
+      const result = await apiClient.get(`/reports/${reportId}/download?type=${type}`);
+      const downloadUrl = result?.url ?? result?.downloadUrl ?? result?.sasUrl;
+      if (!downloadUrl) throw new Error("A API não devolveu uma URL de download válida.");
+      window.location.assign(downloadUrl);
+    } catch (err) {
+      setDownloadError(err instanceof ApiError ? err.message : "Não foi possível preparar o download.");
+    } finally {
+      setDownloadingType(null);
+    }
+  }
 
   return (
     <main className="flex flex-1 flex-col items-center p-4 py-16">
@@ -48,18 +67,22 @@ export default function ReportPage({ params }) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <a
-              href={report.pdfUrl}
+            <button
+              type="button"
+              disabled={!isComplete || downloadingType !== null}
+              onClick={() => handleDownload("pdf")}
               className="rounded-lg border border-line px-4 py-2 font-mono text-xs uppercase tracking-wider text-foreground hover:border-cyan"
             >
-              Baixar PDF
-            </a>
-            <a
-              href={report.xlsxUrl}
+              {downloadingType === "pdf" ? "Preparando PDF…" : "Baixar PDF"}
+            </button>
+            <button
+              type="button"
+              disabled={!isComplete || downloadingType !== null}
+              onClick={() => handleDownload("xlsx")}
               className="rounded-lg border border-line px-4 py-2 font-mono text-xs uppercase tracking-wider text-foreground hover:border-cyan"
             >
-              Baixar XLSX
-            </a>
+              {downloadingType === "xlsx" ? "Preparando XLSX…" : "Baixar XLSX"}
+            </button>
             <button
               type="button"
               onClick={() => setIsShareOpen(true)}
@@ -69,6 +92,14 @@ export default function ReportPage({ params }) {
             </button>
           </div>
         </div>
+
+        {!isComplete && (
+          <p className="mt-4 font-mono text-xs text-foreground-dim">
+            Os downloads serão liberados quando o processamento for concluído.
+          </p>
+        )}
+
+        {downloadError && <p className="mt-4 border-l-2 border-rust pl-3 text-sm text-rust" role="alert">{downloadError}</p>}
 
         {insights.stats?.length > 0 && (
           <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">

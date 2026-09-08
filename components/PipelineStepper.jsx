@@ -1,9 +1,14 @@
 const STAGES = [
-  { key: "received", label: "Recebido" },
+  { key: "pending", label: "Recebido" },
   { key: "queued", label: "Na fila" },
   { key: "processing", label: "Processando" },
-  { key: "done", label: "Pronto" },
+  { key: "completed", label: "Pronto" },
 ];
+
+const LEGACY_STAGE_ALIASES = {
+  received: "pending",
+  done: "completed",
+};
 
 /**
  * Elemento-assinatura do produto: visualiza o pipeline real do sistema
@@ -11,13 +16,14 @@ const STAGES = [
  * Reaparece no upload, no acompanhamento de status e no dashboard.
  */
 export default function PipelineStepper({ currentStage = "received", error = false, stages = STAGES }) {
-  const currentIndex = stages.findIndex((stage) => stage.key === currentStage);
+  const resolvedStage = stages === STAGES ? LEGACY_STAGE_ALIASES[currentStage] ?? currentStage : currentStage;
+  const currentIndex = stages.findIndex((stage) => stage.key === resolvedStage);
 
   return (
     <ol className="flex items-center w-full" aria-label="Progresso do processamento">
       {stages.map((stage, index) => {
-        const isDone = index < currentIndex || (index === currentIndex && currentStage === "done");
-        const isCurrent = index === currentIndex && currentStage !== "done";
+        const isDone = index < currentIndex || (index === currentIndex && resolvedStage === "completed");
+        const isCurrent = index === currentIndex && resolvedStage !== "completed";
         const isLast = index === stages.length - 1;
 
         return (

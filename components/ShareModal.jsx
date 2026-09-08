@@ -16,7 +16,7 @@ export default function ShareModal({ reportId, sharedWith = [], onClose, onShare
     setError(null);
 
     try {
-      const share = await apiClient.post(`/reports/${reportId}/shares`, { identifier });
+      const share = await apiClient.post(`/reports/${reportId}/share`, { identifier: identifier.trim() });
       onShared?.(share);
       setIdentifier("");
     } catch (err) {
@@ -33,6 +33,8 @@ export default function ShareModal({ reportId, sharedWith = [], onClose, onShare
       aria-labelledby="share-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4"
       onClick={onClose}
+      onKeyDown={(event) => event.key === "Escape" && onClose?.()}
+      tabIndex={-1}
     >
       <div
         onClick={(event) => event.stopPropagation()}
