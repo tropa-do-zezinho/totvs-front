@@ -58,6 +58,7 @@ jobs:
           set -euo pipefail
           suffix="${SUBSCRIPTION_ID//-/}"
           echo "ACR_NAME=acrtotvs${suffix:0:12}" >> "$GITHUB_ENV"
+          az extension add --name containerapp --upgrade --yes
           api_fqdn="$(az containerapp show --name ca-totvs-api --resource-group rg-totvs-prod --query properties.configuration.ingress.fqdn --output tsv)"
           test -n "$api_fqdn"
           echo "PUBLIC_API_URL=${API_URL_OVERRIDE:-https://$api_fqdn}" >> "$GITHUB_ENV"
