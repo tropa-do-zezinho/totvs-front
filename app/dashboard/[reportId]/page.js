@@ -20,7 +20,17 @@ function formatValue(value) {
 }
 
 function DataSection({ title, data }) {
-  if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+  if (!data || typeof data !== "object") return null;
+  if (Array.isArray(data)) {
+    return (
+      <section className="mt-6 rounded-2xl border border-line bg-surface p-5">
+        <h3 className="font-display text-lg font-medium">{title}</h3>
+        <pre className="mt-4 overflow-x-auto whitespace-pre-wrap break-words font-mono text-xs">
+          {JSON.stringify(data, null, 2)}
+        </pre>
+      </section>
+    );
+  }
   return (
     <section className="mt-6 rounded-2xl border border-line bg-surface p-5">
       <h3 className="font-display text-lg font-medium">{title}</h3>
@@ -28,7 +38,7 @@ function DataSection({ title, data }) {
         {Object.entries(data).map(([key, value]) => (
           <div key={key} className="border-t border-line pt-3">
             <dt className="font-mono text-xs text-foreground-dim">{key.replaceAll("_", " ")}</dt>
-            <dd className="mt-1 break-words text-sm">
+            <dd className="mt-1 whitespace-pre-wrap break-words text-sm">
               {value && typeof value === "object" ? JSON.stringify(value, null, 2) : formatValue(value)}
             </dd>
           </div>
@@ -146,3 +156,4 @@ export default function ReportPage({ params }) {
     </main>
   );
 }
+
