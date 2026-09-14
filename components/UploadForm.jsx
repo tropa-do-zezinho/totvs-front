@@ -3,6 +3,9 @@
 import { useCallback, useRef, useState } from "react";
 import { apiClient, ApiError } from "@/lib/apiClient";
 
+const ALLOWED_EXTENSIONS = [".csv", ".json", ".jsonl"];
+const MAX_SIZE = 50 * 1024 * 1024;
+
 export default function UploadForm({ onJobCreated }) {
   const inputRef = useRef(null);
   const [file, setFile] = useState(null);
@@ -12,7 +15,17 @@ export default function UploadForm({ onJobCreated }) {
 
   const handleFiles = useCallback((fileList) => {
     const [selected] = fileList;
-    if (selected) setFile(selected);
+    if (!selected) return;
+    if (!ALLOWED_EXTENSIONS.some((ext) => selected.name.toLowerCase().endsWith(ext))) {
+      setError("Envie um arquivo CSV, JSON ou JSONL.");
+      return;
+    }
+    if (selected.size > MAX_SIZE) {
+      setError("O arquivo deve ter no máximo 50 MB.");
+      return;
+    }
+    setError(null);
+    setFile(selected);
   }, []);
 
   async function handleSubmit(event) {
@@ -25,8 +38,8 @@ export default function UploadForm({ onJobCreated }) {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const { jobId } = await apiClient.post("/reports", formData);
-      onJobCreated?.(jobId);
+      const upload = await apiClient.post("/blobs", formData);
+      onJobCreated?.(upload.requestId);
       setFile(null);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Não foi possível enviar o arquivo.");
@@ -60,6 +73,7 @@ export default function UploadForm({ onJobCreated }) {
         <input
           ref={inputRef}
           type="file"
+          accept=".csv,.json,.jsonl"
           className="sr-only"
           onChange={(event) => handleFiles(event.target.files)}
         />
@@ -70,7 +84,7 @@ export default function UploadForm({ onJobCreated }) {
             <p className="font-display text-lg font-medium text-foreground">
               Solte um arquivo aqui ou clique para escolher
             </p>
-            <p className="font-mono text-xs text-foreground-dim">CSV, XLSX ou JSON</p>
+            <p className="font-mono text-xs text-foreground-dim">CSV, JSON ou JSONL · até 50 MB</p>
           </>
         )}
       </div>

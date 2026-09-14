@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import ThemeToggle from "./ThemeToggle";
+import AccountNav from "./AccountNav";
 
 export default function SiteHeader() {
   return (
@@ -20,7 +21,10 @@ export default function SiteHeader() {
             priority
           />
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-4">
+          <AccountNav />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
