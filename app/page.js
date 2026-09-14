@@ -24,8 +24,8 @@ export default function LandingPage() {
           Insight sai pronto.
         </h1>
         <p className="mx-auto mt-4 max-w-md text-base text-foreground-dim">
-          Envie uma planilha, acompanhe o processamento em tempo real e receba um dashboard,
-          PDF e XLSX gerados por IA — prontos para compartilhar com o time.
+          Envie um arquivo CSV, JSON ou JSONL, acompanhe o processamento e consulte
+          os insights de cada reunião no dashboard.
         </p>
 
         <div className="mt-10 rounded-2xl border border-line bg-surface px-4 py-8 sm:px-6">

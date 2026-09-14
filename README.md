@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# TOTVS Front
 
-## Getting Started
+Frontend Next.js para autenticação, envio de arquivos e consulta dos insights produzidos pelo Worker.
 
-First, run the development server:
+## Desenvolvimento
+
+Use Node.js 24 e execute `npm ci` e `npm run dev`. A API Spring deve estar em `http://localhost:8080`. Se estiver em outro endereço, defina `API_BASE_URL` no ambiente do processo Next.js.
+
+O navegador chama apenas as rotas `/api/*` do próprio frontend. O servidor Next encaminha as requisições à API e guarda o JWT em cookie HttpOnly. Não é necessário configurar CORS nem expor o token em JavaScript.
+
+## Fluxo implementado
+
+- `POST /api/auth/register` e `POST /api/auth/login`: recebem o JWT da API e criam a sessão.
+- `POST /api/blobs`: envia CSV, JSON ou JSONL (máximo de 50 MB).
+- `GET /api/blobs`: lista uploads e permite acompanhar `criado`, `analisando`, `processado` e `falha`.
+- `GET /api/insights/{requestId}`: mostra o resumo e as reuniões após o processamento.
+- `POST /api/auth/logout`: encerra a sessão local.
+
+O status é consultado periodicamente porque a API ainda não expõe um canal de eventos para esse fluxo. A API atual não implementa 2FA, compartilhamento de relatórios ou exportações PDF/XLSX; essas ações não aparecem como disponíveis no frontend.
+
+## Validação
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm run build
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

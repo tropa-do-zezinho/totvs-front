@@ -5,11 +5,10 @@ import Link from "next/link";
 import { apiClient, ApiError } from "@/lib/apiClient";
 
 const STAGE_LABEL = {
-  received: "Recebido",
-  queued: "Na fila",
-  processing: "Processando",
-  done: "Pronto",
-  error: "Falhou",
+  criado: "Recebido",
+  analisando: "Analisando",
+  processado: "Pronto",
+  falha: "Falhou",
 };
 
 export default function DashboardPage() {
@@ -17,10 +16,24 @@ export default function DashboardPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    apiClient
-      .get("/reports")
-      .then(setReports)
-      .catch((err) => setError(err instanceof ApiError ? err.message : "Não foi possível carregar os relatórios."));
+    let stopped = false;
+    async function refresh() {
+      try {
+        const uploads = await apiClient.get("/blobs");
+        if (!stopped) {
+          setReports(uploads);
+          setError(null);
+        }
+      } catch (err) {
+        if (!stopped) setError(err instanceof ApiError ? err.message : "Não foi possível carregar os relatórios.");
+      }
+    }
+    refresh();
+    const timer = setInterval(refresh, 10000);
+    return () => {
+      stopped = true;
+      clearInterval(timer);
+    };
   }, []);
 
   return (
@@ -39,7 +52,11 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {error && <p className="mt-6 border-l-2 border-rust pl-3 text-sm text-rust">{error}</p>}
+        {error && (
+          <p className="mt-6 border-l-2 border-rust pl-3 text-sm text-rust">
+            {error} <Link href="/login" className="underline">Entrar novamente</Link>
+          </p>
+        )}
 
         {!reports && !error && (
           <p className="mt-10 font-mono text-sm text-foreground-dim">Carregando…</p>
@@ -53,9 +70,9 @@ export default function DashboardPage() {
 
         <ul className="mt-8 flex flex-col gap-3">
           {reports?.map((report) => (
-            <li key={report.id}>
+            <li key={report.requestId}>
               <Link
-                href={`/dashboard/${report.id}`}
+                href={`/dashboard/${report.requestId}`}
                 className="rounded-2xl flex items-center justify-between border border-line bg-surface px-5 py-4 transition-colors hover:border-cyan"
               >
                 <div>
@@ -67,10 +84,10 @@ export default function DashboardPage() {
                 <span
                   className={[
                     "font-mono text-xs uppercase tracking-wider",
-                    report.stage === "error" ? "text-rust" : report.stage === "done" ? "text-cyan-deep" : "text-cyan",
+                    report.status === "falha" ? "text-rust" : report.status === "processado" ? "text-cyan-deep" : "text-cyan",
                   ].join(" ")}
                 >
-                  {STAGE_LABEL[report.stage] ?? report.stage}
+                  {STAGE_LABEL[report.status] ?? report.status}
                 </span>
               </Link>
             </li>

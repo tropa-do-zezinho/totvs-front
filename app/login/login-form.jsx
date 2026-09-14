@@ -20,13 +20,10 @@ export default function LoginForm() {
     setError(null);
 
     try {
-      const result = await login({ email, password });
-      if (result?.challengeToken) {
-        const next = searchParams.get("next") ?? "/dashboard";
-        router.push(`/2fa?challengeToken=${result.challengeToken}&next=${encodeURIComponent(next)}`);
-        return;
-      }
-      router.push(searchParams.get("next") ?? "/dashboard");
+      await login({ email, password });
+      const next = searchParams.get("next");
+      router.push(next?.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
+      router.refresh();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Não foi possível entrar.");
     } finally {

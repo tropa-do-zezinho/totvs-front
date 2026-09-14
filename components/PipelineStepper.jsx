@@ -1,7 +1,6 @@
 const STAGES = [
   { key: "received", label: "Recebido" },
-  { key: "queued", label: "Na fila" },
-  { key: "processing", label: "Processando" },
+  { key: "processing", label: "Em análise" },
   { key: "done", label: "Pronto" },
 ];
 
@@ -11,7 +10,7 @@ const STAGES = [
  * Reaparece no upload, no acompanhamento de status e no dashboard.
  */
 export default function PipelineStepper({ currentStage = "received", error = false, stages = STAGES }) {
-  const currentIndex = stages.findIndex((stage) => stage.key === currentStage);
+  const currentIndex = Math.max(0, stages.findIndex((stage) => stage.key === currentStage));
 
   return (
     <ol className="flex items-center w-full" aria-label="Progresso do processamento">

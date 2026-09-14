@@ -75,5 +75,5 @@ jobs:
         run: |
           set -euo pipefail
           az extension add --name containerapp --upgrade --yes
-          az containerapp update --name ca-totvs-front --resource-group rg-totvs-prod --image "$IMAGE"
+          az containerapp update --name ca-totvs-front --resource-group rg-totvs-prod --image "$IMAGE" --set-env-vars "API_BASE_URL=$PUBLIC_API_URL"
           az containerapp show --name ca-totvs-front --resource-group rg-totvs-prod --query "{revision:properties.latestRevisionName,status:properties.provisioningState}" --output json
