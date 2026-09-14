@@ -22,7 +22,8 @@ async function handle(request, { params }) {
 
   if (request.method !== "GET") {
     const origin = request.headers.get("origin");
-    if (origin && origin !== new URL(request.url).origin) {
+    const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+    if (origin && host && new URL(origin).host !== host) {
       return NextResponse.json({ message: "Origem inválida" }, { status: 403 });
     }
   }
@@ -85,3 +86,4 @@ async function handle(request, { params }) {
 
 export const GET = handle;
 export const POST = handle;
+
