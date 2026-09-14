@@ -97,31 +97,54 @@ export default function ReportPage({ params }) {
   useEffect(() => {
     let stopped = false;
     let timer;
+    let loading = false;
+    let complete = false;
     async function refresh() {
+      if (stopped || loading || complete) return;
+      clearTimeout(timer);
+      loading = true;
       try {
-        const uploads = await apiClient.get("/blobs");
-        if (stopped) return;
-        const current = uploads.find((item) => item.requestId === reportId);
-        if (!current) throw new Error("Relatório não encontrado.");
-        setUpload(current);
-        if (current.status === "processado") {
+        // O resultado já traz nome e data do arquivo. Evite buscar toda a lista
+        // antes dele: essa sequência adicionava uma requisição à abertura.
+        try {
           const result = await apiClient.get(`/insights/${encodeURIComponent(reportId)}`);
-          if (!stopped) setInsight(result);
-        } else if (current.status !== "falha") {
-          timer = setTimeout(refresh, 5000);
+          if (stopped) return;
+          setInsight(result);
+          setUpload({ fileName: result.fileName, createdAt: result.receivedAt, status: result.status });
+          complete = true;
+        } catch (insightError) {
+          if (!(insightError instanceof ApiError) || insightError.status !== 404) throw insightError;
+          // Enquanto o worker processa, o insight ainda não existe.
+          const uploads = await apiClient.get("/blobs");
+          if (stopped) return;
+          const current = uploads.find((item) => item.requestId === reportId);
+          if (!current) throw new Error("Relatório não encontrado.");
+          setUpload(current);
+          if (current.status === "falha") complete = true;
+          else if (document.visibilityState === "visible") timer = setTimeout(refresh, 5000);
         }
         if (!stopped) { setError(null); setRequiresLogin(false); }
       } catch (err) {
         if (stopped) return;
         setError(err instanceof ApiError ? err.message : err.message);
         setRequiresLogin(err instanceof ApiError && err.status === 401);
-        if (err.status !== 401) timer = setTimeout(refresh, 10000);
+        if (err.status !== 401 && document.visibilityState === "visible") timer = setTimeout(refresh, 10000);
+      } finally {
+        loading = false;
       }
     }
+    function refreshWhenVisible() {
+      if (document.visibilityState === "visible") refresh();
+      else clearTimeout(timer);
+    }
     refresh();
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
     return () => {
       stopped = true;
       clearTimeout(timer);
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, [reportId]);
 
