@@ -9,8 +9,8 @@ export default function SiteHeader() {
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
         <Link
           href="/"
-          aria-label="Voltar para a página inicial"
-          className="flex items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan"
+          aria-label="MoodLens — voltar para a página inicial"
+          className="flex items-center gap-2 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan"
         >
           <Image
             src="/resources/LogoTotvsIconePreto.png"
@@ -20,6 +20,7 @@ export default function SiteHeader() {
             className="h-8 w-8 dark:invert"
             priority
           />
+          <span className="font-display text-base font-medium tracking-tight sm:text-lg">MoodLens</span>
         </Link>
         <div className="flex items-center gap-4">
           <AccountNav />

@@ -38,7 +38,7 @@ export default function RegisterPage() {
       <BrandMotif className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 opacity-[0.06] dark:opacity-[0.1]" />
 
       <div className="relative w-full max-w-sm rounded-2xl border border-line bg-surface p-8">
-        <p className="font-mono text-xs uppercase tracking-wider text-cyan-deep">Cadastro</p>
+        <p className="font-mono text-xs uppercase tracking-wider text-cyan-deep">MoodLens / cadastro</p>
         <h1 className="mt-1 font-display text-2xl font-medium">Criar conta</h1>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">

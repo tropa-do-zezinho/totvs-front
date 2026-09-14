@@ -44,9 +44,9 @@ export default function StatusTracker({ jobId }) {
     <div className="rounded-2xl border border-line bg-surface p-6">
       <PipelineStepper currentStage={status.stage} error={Boolean(error)} />
 
-      <div className="mt-6 flex items-center justify-between font-mono text-xs text-foreground-dim">
-        <span>{jobId}</span>
-        <span>{status.updatedAt ? new Date(status.updatedAt).toLocaleTimeString("pt-BR") : "—"}</span>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-2 font-mono text-xs text-foreground-dim">
+        <span className="min-w-0 break-all">{jobId}</span>
+        <span className="shrink-0">{status.updatedAt ? new Date(status.updatedAt).toLocaleTimeString("pt-BR") : "—"}</span>
       </div>
 
       {error && (
