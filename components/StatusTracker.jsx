@@ -5,7 +5,7 @@ import Link from "next/link";
 import { apiClient, ApiError } from "@/lib/apiClient";
 import PipelineStepper from "./PipelineStepper";
 
-const STAGE = { criado: "received", analisando: "processing", processado: "done", falha: "error" };
+const STAGE = { criado: "received", analisando: "processing", processado: "done", falha: "processing" };
 
 export default function StatusTracker({ jobId }) {
   const [status, setStatus] = useState({ stage: "received", updatedAt: null });
@@ -60,3 +60,4 @@ export default function StatusTracker({ jobId }) {
     </div>
   );
 }
+
