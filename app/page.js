@@ -3,10 +3,9 @@ import PipelineStepper from "@/components/PipelineStepper";
 import BrandMotif from "@/components/BrandMotif";
 
 const STAGES = [
-  { key: "received", label: "Upload" },
-  { key: "queued", label: "Fila" },
-  { key: "processing", label: "IA processa" },
-  { key: "done", label: "Insights" },
+  { key: "received", label: "Envie" },
+  { key: "processing", label: "Acompanhe" },
+  { key: "done", label: "Explore" },
 ];
 
 export default function LandingPage() {
@@ -15,20 +14,18 @@ export default function LandingPage() {
       <BrandMotif className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 opacity-[0.06] sm:h-[26rem] sm:w-[26rem] dark:opacity-[0.1]" />
 
       <div className="relative w-full max-w-2xl text-center">
-        <p className="font-mono text-xs uppercase tracking-wider text-cyan-deep">
-          Upload → Fila → IA → Dashboard
+        <p className="font-mono text-xs uppercase tracking-[0.16em] text-cyan-deep">
+          MoodLens · Inteligência para reuniões
         </p>
-        <h1 className="mt-3 font-display text-4xl font-medium leading-tight sm:text-5xl">
-          Arquivo bruto entra.
-          <br />
-          Insight sai pronto.
+        <h1 className="mt-4 font-display text-4xl font-medium leading-tight tracking-tight sm:text-5xl">
+          Transforme conversas em<br className="hidden sm:block" /> próximos passos.
         </h1>
         <p className="mx-auto mt-4 max-w-md text-base text-foreground-dim">
-          Envie um arquivo CSV, JSON ou JSONL, acompanhe o processamento e consulte
-          os insights de cada reunião no dashboard.
+          Envie suas reuniões, acompanhe a análise e descubra prioridades,
+          evidências e ações para tomar melhores decisões.
         </p>
 
-        <div className="mt-10 rounded-2xl border border-line bg-surface px-4 py-8 sm:px-6">
+        <div className="mt-10 rounded-2xl border border-line bg-surface px-5 py-8 sm:px-8">
           <PipelineStepper currentStage="done" stages={STAGES} />
         </div>
 

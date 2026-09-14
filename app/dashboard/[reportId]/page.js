@@ -101,10 +101,10 @@ export default function ReportPage({ params }) {
     <main className="flex flex-1 flex-col items-center px-4 py-10 sm:px-6 sm:py-14">
       <div className="w-full max-w-5xl">
         <Link href="/dashboard" className="font-mono text-xs text-cyan-deep hover:underline">← Meus relatórios</Link>
-        <p className="mt-7 font-mono text-xs uppercase tracking-wider text-cyan-deep">Relatório</p>
+        <p className="mt-7 font-mono text-xs uppercase tracking-wider text-cyan-deep">MoodLens / relatório</p>
         <h1 className="mt-1 break-words font-display text-3xl font-medium">{upload?.fileName ?? reportId}</h1>
         {upload && (
-          <p className="mt-2 font-mono text-xs text-foreground-dim">
+          <p className="mt-2 break-all font-mono text-xs text-foreground-dim">
             {LABEL[upload.status] ?? upload.status} · {upload.createdAt ? new Date(upload.createdAt).toLocaleString("pt-BR") : "—"} · {reportId}
           </p>
         )}

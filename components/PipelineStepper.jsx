@@ -6,7 +6,7 @@ const STAGES = [
 
 /**
  * Elemento-assinatura do produto: visualiza o pipeline real do sistema
- * (upload -> fila -> worker -> pronto) como uma esteira horizontal.
+ * (recebido -> em análise -> pronto) como uma esteira horizontal.
  * Reaparece no upload, no acompanhamento de status e no dashboard.
  */
 export default function PipelineStepper({ currentStage = "received", error = false, stages = STAGES }) {
