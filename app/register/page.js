@@ -24,7 +24,8 @@ export default function RegisterPage() {
 
     try {
       await register(form);
-      router.push("/2fa?setup=1");
+      router.push("/dashboard");
+      router.refresh();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Não foi possível criar a conta.");
     } finally {
@@ -68,7 +69,7 @@ export default function RegisterPage() {
             <input
               type="password"
               required
-              minLength={8}
+              minLength={6}
               value={form.password}
               onChange={updateField("password")}
               className="rounded-lg border border-line bg-ink px-3 py-2 text-sm outline-none focus:border-cyan"
