@@ -34,7 +34,7 @@ export default function LoginForm() {
   return (
     <div className="rounded-2xl w-full max-w-sm border border-line bg-surface p-8">
       <p className="font-mono text-xs uppercase tracking-wider text-cyan-deep">Acesso</p>
-      <h1 className="mt-1 font-display text-2xl font-medium">Entrar na fábrica</h1>
+      <h1 className="mt-1 font-display text-2xl font-medium">Entrar no MoodLens</h1>
 
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
         <label className="flex flex-col gap-1">

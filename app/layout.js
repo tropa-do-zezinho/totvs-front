@@ -22,8 +22,8 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "Fábrica de Insights — ChallengeTotvs2026",
-  description: "Envie um arquivo, acompanhe o processamento e consulte insights gerados por IA.",
+  title: "MoodLens | Insights para reuniões",
+  description: "Analise reuniões, descubra prioridades e transforme conversas em próximos passos.",
 };
 
 export default function RootLayout({ children }) {
