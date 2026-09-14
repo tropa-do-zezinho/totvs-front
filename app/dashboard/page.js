@@ -25,17 +25,36 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let stopped = false;
+    let timer;
+    let loading = false;
     async function refresh() {
+      if (stopped || loading) return;
+      clearTimeout(timer);
+      loading = true;
       try {
         const uploads = await apiClient.get("/blobs");
-        if (!stopped) { setReports(Array.isArray(uploads) ? uploads : []); setError(null); setRequiresLogin(false); }
+        const list = Array.isArray(uploads) ? uploads : [];
+        if (!stopped) { setReports(list); setError(null); setRequiresLogin(false); }
+        if (!stopped && document.visibilityState === "visible" && list.some((item) => !["processado", "falha"].includes(item.status))) {
+          timer = setTimeout(refresh, 5000);
+        }
       } catch (err) {
         if (!stopped) { setError(err instanceof ApiError ? err.message : "Não foi possível carregar os relatórios."); setRequiresLogin(err instanceof ApiError && err.status === 401); }
+        if (!stopped && !(err instanceof ApiError && err.status === 401) && document.visibilityState === "visible") {
+          timer = setTimeout(refresh, 15000);
+        }
+      } finally {
+        loading = false;
       }
     }
+    function refreshWhenVisible() {
+      if (document.visibilityState === "visible") refresh();
+      else clearTimeout(timer);
+    }
     refresh();
-    const timer = setInterval(refresh, 10000);
-    return () => { stopped = true; clearInterval(timer); };
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => { stopped = true; clearTimeout(timer); window.removeEventListener("focus", refreshWhenVisible); document.removeEventListener("visibilitychange", refreshWhenVisible); };
   }, []);
 
   const counts = useMemo(() => {
